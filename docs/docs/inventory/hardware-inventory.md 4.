@@ -1,0 +1,682 @@
+
+# Home Lab Hardware Inventory
+
+## 1. Purpose
+
+This document records the physical hardware used or planned for this home lab.
+
+It provides a central reference for:
+
+- Identifying installed hardware.
+- Recording hardware specifications.
+- Tracking purchased and planned equipment.
+- Checking component compatibility.
+- Documenting firmware and BIOS/UEFI settings.
+- Recording hardware health and test results.
+- Planning upgrades.
+- Tracking maintenance and warranties.
+
+This inventory should describe the actual equipment in the lab. Do not enter assumed specifications. If a value is unknown, use `To be verified`.
+
+---
+
+## 2. Inventory Status Definitions
+
+Use these statuses consistently throughout this document.
+
+| Status | Meaning |
+|---|---|
+| Planned | Equipment is being considered but has not been purchased. |
+| Ordered | Equipment has been purchased but has not arrived. |
+| Acquired | Equipment has arrived but has not been installed. |
+| Installed | Equipment has been physically installed. |
+| Verified | Equipment has been installed and its operation has been tested. |
+| Retired | Equipment is no longer in active use. |
+
+---
+
+## 3. Lab Hardware Overview
+
+### 3.1 Primary System
+
+| Field | Value |
+|---|---|
+| System name | `To be assigned` |
+| System role | Home lab server |
+| Inventory status | Planned |
+| Manufacturer | To be verified |
+| Model | To be verified |
+| System type | To be verified |
+| Form factor | To be verified |
+| Acquisition date | To be recorded |
+| Operating location | Private record; do not publish exact home address |
+| Intended operating system | To be decided |
+| Intended primary workload | Virtualization, containers, networking and server applications |
+| Last inventory review | Not yet reviewed |
+
+### 3.2 Additional Systems
+
+Add one entry for every additional physical server, desktop, laptop, network appliance or other significant device.
+
+| System name | Manufacturer/model | Primary role | Status |
+|---|---|---|---|
+| To be assigned | To be verified | To be decided | Planned |
+| To be assigned | To be verified | To be decided | Planned |
+
+---
+
+## 4. CPU Inventory
+
+The CPU is responsible for executing instructions and processing workloads.
+
+Record the processor model and its capabilities rather than relying only on the advertised processor family.
+
+| Field | Value |
+|---|---|
+| Manufacturer | To be verified |
+| Exact CPU model | To be verified |
+| Architecture | To be verified |
+| Physical cores | To be verified |
+| Threads | To be verified |
+| Base frequency | To be verified |
+| Maximum boost frequency | To be verified |
+| Virtualization support | To be verified |
+| Virtualization technology | Intel VT-x, AMD-V or other; verify actual support |
+| IOMMU support | To be verified |
+| TDP | To be verified from manufacturer documentation |
+| Installed CPU count | To be verified |
+| Inventory status | Planned |
+
+### CPU Verification Checklist
+
+- [ ] Identify the exact CPU model.
+- [ ] Confirm the number of physical cores.
+- [ ] Confirm the number of threads.
+- [ ] Check virtualization support.
+- [ ] Check IOMMU support if required for device passthrough.
+- [ ] Confirm motherboard socket compatibility.
+- [ ] Confirm BIOS/UEFI compatibility.
+- [ ] Check cooling requirements.
+- [ ] Record the manufacturer's specifications.
+
+### Why Virtualization Support Matters
+
+Virtualization allows one physical server to run multiple virtual machines.
+
+Examples of possible lab workloads include:
+
+- Linux server virtual machines.
+- Windows test environments.
+- Network simulation systems.
+- Application development environments.
+- Database servers.
+- Infrastructure services.
+
+CPU virtualization support is important when using platforms such as KVM, Proxmox VE or other hypervisors.
+
+---
+
+## 5. RAM Inventory
+
+RAM provides temporary working memory for the operating system, virtual machines, containers and applications.
+
+| Field | Value |
+|---|---|
+| Total installed RAM | To be verified |
+| RAM generation | DDR3 / DDR4 / DDR5 / other |
+| Rated speed | To be verified |
+| Actual operating speed | To be verified |
+| Module capacity | To be verified |
+| Number of installed modules | To be verified |
+| Total memory slots | To be verified |
+| ECC support | To be verified |
+| ECC enabled and operating | To be verified |
+| Supported maximum capacity | To be verified |
+| Inventory status | Planned |
+
+### Installed Memory Modules
+
+| Slot | Module capacity | RAM generation | Rated speed | ECC type | Status |
+|---|---:|---|---|---|---|
+| DIMM 1 | Unknown | Unknown | Unknown | Unknown | To be verified |
+| DIMM 2 | Unknown | Unknown | Unknown | Unknown | To be verified |
+| DIMM 3 | Unknown | Unknown | Unknown | Unknown | To be verified |
+| DIMM 4 | Unknown | Unknown | Unknown | Unknown | To be verified |
+
+Add or remove rows according to the motherboard's actual memory slots.
+
+### RAM Verification Checklist
+
+- [ ] Confirm the installed RAM capacity.
+- [ ] Identify the memory generation.
+- [ ] Record each module's capacity.
+- [ ] Check the supported memory speed.
+- [ ] Check motherboard memory compatibility.
+- [ ] Confirm whether ECC is supported.
+- [ ] Confirm whether ECC is actually enabled and functioning, if applicable.
+- [ ] Run a memory test.
+- [ ] Record any errors.
+
+### RAM Planning Notes
+
+Memory requirements depend on the number and size of workloads.
+
+For example:
+
+- A basic Linux server requires relatively little memory.
+- Multiple virtual machines need more memory.
+- Database workloads may benefit from additional RAM.
+- Kubernetes clusters and monitoring stacks require memory for their services and workloads.
+
+Do not purchase RAM based only on the motherboard's maximum advertised capacity. Check the exact CPU, motherboard and memory compatibility requirements.
+
+---
+
+## 6. Motherboard Inventory
+
+The motherboard connects the CPU, memory, storage, expansion cards and other system components.
+
+| Field | Value |
+|---|---|
+| Manufacturer | To be verified |
+| Exact model | To be verified |
+| Hardware revision | To be verified |
+| CPU socket | To be verified |
+| Chipset | To be verified |
+| Supported CPU models | To be verified |
+| Memory generation | To be verified |
+| Maximum supported RAM | To be verified |
+| Memory slots | To be verified |
+| SATA ports | To be verified |
+| M.2 slots | To be verified |
+| PCIe slots | To be verified |
+| Integrated Ethernet | To be verified |
+| Integrated Wi-Fi | To be verified |
+| ECC memory support | To be verified |
+| BIOS/UEFI version | To be verified |
+| Inventory status | Planned |
+
+### Motherboard Verification Checklist
+
+- [ ] Identify the exact motherboard model.
+- [ ] Identify the hardware revision.
+- [ ] Confirm CPU compatibility.
+- [ ] Confirm RAM compatibility.
+- [ ] Check available storage connectors.
+- [ ] Check PCIe expansion slots.
+- [ ] Check network interface capabilities.
+- [ ] Check BIOS/UEFI virtualization settings.
+- [ ] Check firmware update availability.
+- [ ] Review the manufacturer's manual.
+
+---
+
+## 7. Storage Inventory
+
+Storage holds the operating system, virtual machine disks, application data, databases, backups and other files.
+
+Record each physical storage device separately.
+
+### 7.1 Installed Storage Devices
+
+| Device name | Manufacturer/model | Capacity | Interface | Type | Intended role | Status |
+|---|---|---:|---|---|---|---|
+| Drive 1 | To be verified | Unknown | Unknown | Unknown | Operating system | Planned |
+| Drive 2 | To be verified | Unknown | Unknown | Unknown | VM and application storage | Planned |
+| Drive 3 | To be verified | Unknown | Unknown | Unknown | Backup or data storage | Planned |
+
+Possible storage types include:
+
+- SATA HDD
+- SATA SSD
+- NVMe SSD
+- SAS HDD or SSD
+
+### 7.2 Storage Health Records
+
+| Device | Health status | Power-on hours | Temperature | SMART check date | Notes |
+|---|---|---:|---:|---|---|
+| Drive 1 | Not tested | Unknown | Unknown | Not tested | |
+| Drive 2 | Not tested | Unknown | Unknown | Not tested | |
+| Drive 3 | Not tested | Unknown | Unknown | Not tested | |
+
+### Storage Verification Checklist
+
+- [ ] Identify each installed drive.
+- [ ] Record model and capacity.
+- [ ] Identify the storage interface.
+- [ ] Check drive health.
+- [ ] Review SMART information where supported.
+- [ ] Check for reallocated or pending sectors on applicable drives.
+- [ ] Check SSD wear information where available.
+- [ ] Confirm which drive contains the operating system.
+- [ ] Confirm which drives store virtual machines and application data.
+- [ ] Establish a backup plan.
+
+**Important:** A SMART status of `PASSED` does not guarantee that a drive will not fail. Keep independent backups of important data.
+
+### 7.3 Storage Layout Plan
+
+Describe how storage will be organized.
+
+| Storage area | Intended use | Proposed device | Status |
+|---|---|---|---|
+| Operating system | Host operating system | To be decided | Planned |
+| Virtual machines | VM disks | To be decided | Planned |
+| Containers | Container data | To be decided | Planned |
+| Databases | Database files | To be decided | Planned |
+| Backups | Backup copies | Separate storage destination | Planned |
+
+---
+
+## 8. Network Interface Inventory
+
+Network interfaces connect the server to the local network and other systems.
+
+| Field | Value |
+|---|---|
+| Interface name | To be verified |
+| Manufacturer | To be verified |
+| Model | To be verified |
+| Interface type | Ethernet / Wi-Fi / other |
+| Maximum supported link speed | To be verified |
+| Actual negotiated link speed | To be verified |
+| Driver | To be verified |
+| Driver version | To be verified |
+| Wake-on-LAN support | To be verified |
+| VLAN support | To be verified |
+| Interface status | Planned |
+
+### Network Interface Records
+
+| Interface | Model | Link speed | Connection type | Intended role | Status |
+|---|---|---|---|---|---|
+| NIC 1 | To be verified | Unknown | Ethernet | Main network connection | Planned |
+| NIC 2 | To be verified | Unknown | Ethernet | Additional network or lab traffic | Planned |
+
+### Network Verification Checklist
+
+- [ ] Identify all physical network interfaces.
+- [ ] Record interface models.
+- [ ] Confirm supported link speeds.
+- [ ] Check the negotiated link speed.
+- [ ] Confirm driver support in the intended operating system.
+- [ ] Test network connectivity.
+- [ ] Check whether additional network interfaces are required.
+- [ ] Document the intended network role of each interface.
+
+### Network Privacy
+
+Do not publish the following in a public repository:
+
+- Full MAC addresses.
+- Public IP addresses associated with your home connection.
+- Router administrator credentials.
+- Wi-Fi passwords.
+- Private network diagrams containing sensitive access information.
+- VPN credentials or private keys.
+
+Use placeholders or redact sensitive values.
+
+---
+
+## 9. Power Supply Inventory
+
+The power supply unit (PSU) provides electrical power to the server components.
+
+| Field | Value |
+|---|---|
+| Manufacturer | To be verified |
+| Exact model | To be verified |
+| Rated output | To be verified |
+| Efficiency certification | To be verified |
+| Form factor | To be verified |
+| Modular design | Fully modular / semi-modular / non-modular |
+| Required connectors available | To be verified |
+| Protection features | To be verified |
+| Inventory status | Planned |
+
+### PSU Verification Checklist
+
+- [ ] Confirm the PSU model.
+- [ ] Confirm its rated output.
+- [ ] Check CPU power connectors.
+- [ ] Check motherboard power connectors.
+- [ ] Check GPU power connectors if required.
+- [ ] Check SATA power connectors.
+- [ ] Check PSU dimensions and case compatibility.
+- [ ] Confirm the PSU is suitable for the expected workload.
+
+Do not select a PSU using only its wattage rating. Consider quality, compatibility, connector requirements and expected system load.
+
+---
+
+## 10. Case and Cooling Inventory
+
+### 10.1 Case
+
+| Field | Value |
+|---|---|
+| Manufacturer | To be verified |
+| Model | To be verified |
+| Form factor | To be verified |
+| Motherboard compatibility | To be verified |
+| Drive bays | To be verified |
+| Expansion slots | To be verified |
+| Cooling capacity | To be verified |
+| Airflow design | To be verified |
+| Inventory status | Planned |
+
+### 10.2 Cooling
+
+| Component | Manufacturer/model | Type | Installation location | Status |
+|---|---|---|---|---|
+| CPU cooler | To be verified | Air / liquid | CPU | Planned |
+| Case fan 1 | To be verified | Fan | To be verified | Planned |
+| Case fan 2 | To be verified | Fan | To be verified | Planned |
+| Additional cooling | To be verified | To be verified | To be verified | Planned |
+
+### Cooling Verification Checklist
+
+- [ ] Confirm CPU cooler compatibility.
+- [ ] Confirm case clearance.
+- [ ] Check fan placement.
+- [ ] Check airflow direction.
+- [ ] Monitor CPU temperature under load.
+- [ ] Monitor storage temperatures.
+- [ ] Check for abnormal fan noise.
+- [ ] Confirm that the system remains stable under sustained workloads.
+
+---
+
+## 11. UPS and Power Protection
+
+A UPS (Uninterruptible Power Supply) can provide temporary backup power and help protect equipment during power interruptions.
+
+| Field | Value |
+|---|---|
+| Manufacturer | To be verified |
+| Model | To be verified |
+| Rated capacity | To be verified |
+| Capacity unit | VA and/or watts |
+| Battery type | To be verified |
+| Battery condition | To be verified |
+| Estimated runtime | To be measured or verified |
+| Connected equipment | To be recorded |
+| USB/network monitoring support | To be verified |
+| Inventory status | Planned |
+
+### Power Protection Checklist
+
+- [ ] Confirm UPS capacity.
+- [ ] Check the actual power draw of connected equipment.
+- [ ] Confirm battery condition.
+- [ ] Test the UPS under a controlled load.
+- [ ] Record estimated runtime.
+- [ ] Check whether automatic shutdown integration is supported.
+- [ ] Record battery replacement information.
+- [ ] Avoid exceeding the UPS's rated load.
+
+A UPS is not a substitute for backups. It provides temporary power and may allow a controlled shutdown.
+
+---
+
+## 12. BIOS/UEFI Configuration Record
+
+Record important firmware settings after inspecting the system.
+
+| Setting | Current value | Intended value | Verified |
+|---|---|---|---|
+| BIOS/UEFI version | Unknown | Supported stable version | No |
+| Boot mode | Unknown | To be decided | No |
+| CPU virtualization | Unknown | Enabled if required | No |
+| IOMMU | Unknown | Enabled if required | No |
+| Secure Boot | Unknown | Depends on OS and configuration | No |
+| Boot priority | Unknown | Intended system drive | No |
+| Memory profile | Unknown | Supported stable configuration | No |
+| Wake-on-LAN | Unknown | Optional | No |
+| Firmware update status | Unknown | Reviewed | No |
+
+### Firmware Management Notes
+
+- Check the manufacturer's documentation before changing firmware settings.
+- Do not update BIOS/UEFI without understanding the procedure and recovery risks.
+- Record the existing version before an update.
+- Do not interrupt a firmware update.
+- Enable virtualization features only when supported and required by the lab configuration.
+
+---
+
+## 13. Physical Inspection and Installation
+
+Use this checklist when receiving or assembling hardware.
+
+### Before Installation
+
+- [ ] Check packaging for visible damage.
+- [ ] Inspect the motherboard for physical damage.
+- [ ] Inspect CPU socket and pins.
+- [ ] Inspect RAM modules.
+- [ ] Inspect storage devices.
+- [ ] Inspect PSU and cables.
+- [ ] Confirm component compatibility.
+- [ ] Check that required mounting hardware is available.
+- [ ] Confirm appropriate anti-static handling precautions.
+
+### During Installation
+
+- [ ] Install CPU correctly.
+- [ ] Install CPU cooler.
+- [ ] Install RAM in the recommended slots.
+- [ ] Install motherboard.
+- [ ] Connect motherboard power.
+- [ ] Connect CPU power.
+- [ ] Install storage devices.
+- [ ] Connect front-panel connectors.
+- [ ] Connect case fans.
+- [ ] Check cable routing.
+- [ ] Confirm no loose screws or cables.
+
+### First Power-On
+
+- [ ] Confirm fans operate.
+- [ ] Confirm the system reaches BIOS/UEFI.
+- [ ] Confirm CPU is detected.
+- [ ] Confirm RAM capacity is detected.
+- [ ] Confirm storage devices are detected.
+- [ ] Confirm network interfaces are detected.
+- [ ] Check for hardware warnings.
+- [ ] Record the first successful boot date.
+
+---
+
+## 14. Hardware Testing and Verification
+
+Do not mark a component as verified merely because it is installed.
+
+Record the test performed and its result.
+
+| Component | Test | Result | Date | Status |
+|---|---|---|---|---|
+| CPU | CPU identification and stress test | Not tested | — | Pending |
+| RAM | Memory diagnostic | Not tested | — | Pending |
+| Storage | SMART and read/write checks | Not tested | — | Pending |
+| Network | Connectivity and link-speed test | Not tested | — | Pending |
+| Cooling | Temperature monitoring under load | Not tested | — | Pending |
+| UPS | Controlled backup-power test | Not tested | — | Pending |
+| Overall system | Sustained stability test | Not tested | — | Pending |
+
+### Testing Principles
+
+- Use reliable diagnostic tools.
+- Record the test conditions.
+- Record errors rather than hiding them.
+- Do not run destructive storage tests on drives containing important data.
+- Back up important information before testing.
+- Monitor temperatures during stress testing.
+- Stop testing if temperatures, noise or system behaviour indicate a potential hardware problem.
+
+---
+
+## 15. Power Consumption and Operating Cost
+
+A home lab can run for many hours each day. Power consumption should be measured rather than guessed.
+
+| Measurement | Value |
+|---|---|
+| Idle power draw | Not measured |
+| Typical operating power | Not measured |
+| Peak power draw | Not measured |
+| Measurement device | To be recorded |
+| Measurement date | Not measured |
+| Average operating hours per day | To be recorded |
+| Electricity tariff | To be verified |
+| Estimated monthly energy consumption | Not calculated |
+| Estimated monthly electricity cost | Not calculated |
+
+### Basic Energy Calculation
+
+Energy consumption:
+
+`Energy (kWh) = Power (kW) × Operating hours`
+
+For example, a server drawing an average of 100 watts for 24 hours:
+
+`0.1 kW × 24 hours = 2.4 kWh per day`
+
+Estimated monthly consumption over 30 days:
+
+`2.4 kWh × 30 = 72 kWh per month`
+
+Estimated monthly electricity cost:
+
+`Monthly energy consumption (kWh) × applicable electricity tariff`
+
+Use your actual measured power draw and applicable tariff. The example is illustrative, not a prediction of your server's consumption.
+
+---
+
+## 16. Hardware Upgrade Plan
+
+Track possible upgrades and explain why they are needed.
+
+| Upgrade | Current limitation | Proposed improvement | Priority | Estimated cost | Status |
+|---|---|---|---|---|---|
+| RAM | To be assessed | To be decided | To be decided | Unknown | Not started |
+| Storage | To be assessed | To be decided | To be decided | Unknown | Not started |
+| Network interface | To be assessed | To be decided | To be decided | Unknown | Not started |
+| UPS | To be assessed | To be decided | To be decided | Unknown | Not started |
+| Cooling | To be assessed | To be decided | To be decided | Unknown | Not started |
+
+Do not upgrade hardware without identifying a real limitation or requirement.
+
+---
+
+## 17. Warranty and Maintenance Records
+
+Keep warranty and maintenance records for important components.
+
+| Component | Purchase date | Warranty period | Warranty expiry | Maintenance notes |
+|---|---|---|---|---|
+| Server | Unknown | Unknown | Unknown | |
+| CPU | Unknown | Unknown | Unknown | |
+| RAM | Unknown | Unknown | Unknown | |
+| Storage | Unknown | Unknown | Unknown | |
+| PSU | Unknown | Unknown | Unknown | |
+| UPS | Unknown | Unknown | Unknown | |
+
+### Maintenance Log
+
+| Date | Component | Maintenance performed | Result | Next review |
+|---|---|---|---|---|
+| Not yet recorded | — | — | — | — |
+
+Possible maintenance activities:
+
+- Cleaning dust filters.
+- Checking fan operation.
+- Reviewing drive health.
+- Checking system temperatures.
+- Reviewing UPS battery condition.
+- Checking firmware updates.
+- Inspecting power and data cables.
+- Reviewing system stability.
+
+---
+
+## 18. Evidence and Documentation
+
+Where useful, maintain evidence of the actual hardware configuration.
+
+Examples:
+
+- Photographs of the assembled server.
+- Screenshots of BIOS/UEFI hardware information.
+- Operating system hardware reports.
+- Memory test results.
+- Storage health reports.
+- Network interface information.
+- Power consumption measurements.
+- Temperature monitoring results.
+
+Before uploading evidence to a public GitHub repository, remove sensitive information.
+
+Do not publish:
+
+- Serial numbers.
+- Product keys or license keys.
+- Full MAC addresses.
+- Private IP addressing details when they reveal sensitive network information.
+- Public IP addresses.
+- Credentials, passwords or private keys.
+- Exact home address or identifiable location details.
+
+For sensitive information, keep a private local copy rather than placing it in the public repository.
+
+---
+
+## 19. Inventory Review
+
+Review this document whenever hardware is purchased, installed, replaced, upgraded or retired.
+
+### Review Checklist
+
+- [ ] All installed components are listed.
+- [ ] Unknown specifications are marked for verification.
+- [ ] Hardware status values are current.
+- [ ] CPU and RAM specifications are verified.
+- [ ] Storage health information is updated.
+- [ ] Network interfaces are documented.
+- [ ] BIOS/UEFI settings are recorded.
+- [ ] Power and cooling information is updated.
+- [ ] Hardware tests are recorded.
+- [ ] Upgrade plans reflect actual requirements.
+- [ ] Sensitive information has been removed before publication.
+
+### Review History
+
+| Review date | Changes made | Reviewed by |
+|---|---|---|
+| Initial creation | Created hardware inventory template | Project owner |
+
+---
+
+## 20. Current Inventory Summary
+
+Complete this section as the lab develops.
+
+| Category | Current status |
+|---|---|
+| Primary server | Not yet specified |
+| CPU | Not yet specified |
+| RAM | Not yet specified |
+| Motherboard | Not yet specified |
+| Storage | Not yet specified |
+| Network interfaces | Not yet specified |
+| PSU | Not yet specified |
+| Case and cooling | Not yet specified |
+| UPS | Not yet specified |
+| Operating system | Not yet selected |
+| Hardware verification | Not started |
+
+**Current project stage:** Hardware inventory template created. Actual hardware specifications and test results still need to be entered.
