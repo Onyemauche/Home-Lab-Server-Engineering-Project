@@ -1,0 +1,1452 @@
+
+# Home Lab Network Architecture
+
+## 1. Purpose
+
+This document defines the network architecture for the home lab.
+
+The network connects physical devices, servers, virtual machines, containers and other infrastructure components. It provides the communication paths required for the lab to operate.
+
+This document covers:
+
+- Basic computer networking concepts.
+- Network topology and physical connections.
+- Routers, switches and access points.
+- IP addressing and subnetting.
+- DHCP and DNS.
+- Default gateways and routing.
+- Network segmentation using VLANs.
+- Firewall principles.
+- Physical server and virtual machine networking.
+- Network security.
+- Network testing and troubleshooting.
+- Network inventory and documentation.
+
+The design will begin with a simple, functional network and develop into a segmented network as the lab grows.
+
+**Important:** The addresses and diagrams in this document are examples. They are not confirmed details of the actual home network.
+
+---
+
+## 2. Network Architecture Overview
+
+A home lab network allows different devices and services to communicate.
+
+A basic environment might contain:
+
+- An internet connection.
+- A router.
+- An Ethernet switch.
+- A physical server.
+- A desktop or laptop.
+- Wireless devices.
+- Virtual machines running on the server.
+
+### 2.1 Basic Network Diagram
+
+```text
+                 INTERNET
+                     |
+                     |
+               ISP CONNECTION
+                     |
+                     |
+                  ROUTER
+                     |
+                     |
+                ETHERNET
+                  SWITCH
+                     |
+          +----------+----------+
+          |          |          |
+          |          |          |
+        SERVER     DESKTOP    ACCESS POINT
+          |                     |
+          |                   Wi-Fi
+          |                     |
+     VIRTUAL MACHINES        LAPTOPS
+     AND CONTAINERS         PHONES
+```
+
+The router connects the local network to the internet. The switch connects wired devices within the local network. The access point provides wireless connectivity.
+
+The physical server can host multiple virtual machines and containers while using one or more physical network interfaces.
+
+### 2.2 Network Architecture Goals
+
+The network should support:
+
+1. Reliable communication between devices.
+2. Server management from a trusted computer.
+3. Access to hosted applications.
+4. Virtual machine networking.
+5. Container networking.
+6. Network troubleshooting and monitoring.
+7. Safe experimentation with network services.
+8. Expansion to VLANs and multiple subnets.
+9. Separation of trusted and untrusted devices.
+10. Controlled remote access when required.
+
+### 2.3 Design Principles
+
+- Start with a network that is easy to understand.
+- Use wired Ethernet for important server connections where practical.
+- Keep server management interfaces private.
+- Assign predictable addresses to infrastructure equipment.
+- Document physical and virtual network connections.
+- Avoid unnecessary network complexity.
+- Introduce VLANs when the equipment and requirements justify them.
+- Use firewall rules to control communication between network segments.
+- Maintain a recovery method before changing important network settings.
+
+---
+
+## 3. Essential Networking Concepts
+
+Understanding these concepts is necessary before designing the lab.
+
+### 3.1 Network
+
+A network is a collection of connected devices that communicate and share resources.
+
+Examples include:
+
+- Computers.
+- Servers.
+- Routers.
+- Switches.
+- Printers.
+- Network storage.
+- Phones.
+- Virtual machines.
+
+### 3.2 IP Address
+
+An Internet Protocol (IP) address identifies a device or network interface for communication at the IP layer.
+
+Example IPv4 address:
+
+`192.168.10.20`
+
+This could represent a server on a private home network.
+
+A computer can have multiple network interfaces, and each interface can have its own IP configuration.
+
+### 3.3 MAC Address
+
+A Media Access Control (MAC) address is a link-layer identifier associated with a network interface.
+
+MAC addresses are used in local Ethernet communication.
+
+Do not publish full MAC addresses from your actual home equipment in this public repository.
+
+### 3.4 Subnet
+
+A subnet is a logical division of an IP network.
+
+For example:
+
+`192.168.10.0/24`
+
+This represents an IPv4 network with a 24-bit network prefix.
+
+In a conventional `/24` network:
+
+| Address | Purpose |
+|---|---|
+| 192.168.10.0 | Network address |
+| 192.168.10.1 | Possible router address |
+| 192.168.10.10 | Possible server address |
+| 192.168.10.20 | Possible workstation address |
+| 192.168.10.255 | Broadcast address |
+
+The usable host range is normally `192.168.10.1` through `192.168.10.254`.
+
+These values are examples only. The actual network must be checked before selecting addresses.
+
+### 3.5 Default Gateway
+
+A default gateway is the router or Layer 3 device to which a computer sends traffic when the destination is outside its local subnet.
+
+For example, a server with an address of `192.168.10.10/24` might use `192.168.10.1` as its default gateway.
+
+### 3.6 DNS
+
+The Domain Name System translates domain names into IP addresses.
+
+For example, DNS helps a computer resolve a name such as:
+
+`example.com`
+
+into the IP address required to connect to the destination.
+
+Without DNS, users would often need to remember IP addresses instead of readable names.
+
+### 3.7 DHCP
+
+Dynamic Host Configuration Protocol automatically provides network configuration to clients.
+
+A DHCP server can provide:
+
+- IP address.
+- Subnet mask or prefix.
+- Default gateway.
+- DNS server addresses.
+- Lease information.
+
+The home router often provides DHCP in a basic home network.
+
+### 3.8 Port
+
+A network port identifies a particular application or service endpoint.
+
+Examples of common TCP ports:
+
+| Port | Common service |
+|---:|---|
+| 22 | SSH |
+| 53 | DNS |
+| 80 | HTTP |
+| 443 | HTTPS |
+| 3389 | Remote Desktop Protocol |
+
+A service may use a different port depending on its configuration.
+
+Opening a port does not automatically make a service secure. The service, firewall rules, authentication and exposure method must also be considered.
+
+---
+
+## 4. Network Equipment
+
+### 4.1 Router
+
+A router connects different IP networks.
+
+In a typical home setup, the router connects the local network to the internet.
+
+Common functions include:
+
+- Routing.
+- Network Address Translation (NAT).
+- DHCP.
+- DNS forwarding.
+- Firewalling.
+- Wireless management, on combined router/access point devices.
+
+For a more advanced lab, the router may also support:
+
+- VLAN interfaces.
+- Inter-VLAN routing.
+- Advanced firewall rules.
+- VPN services.
+- Multiple network segments.
+
+A basic consumer router may not support every advanced feature.
+
+### 4.2 Switch
+
+A network switch connects wired devices within a local network.
+
+Common types:
+
+**Unmanaged switch**
+
+- Simple Ethernet connectivity.
+- Minimal configuration.
+- Suitable for a basic network.
+
+**Managed switch**
+
+- Supports configuration and monitoring features.
+- Commonly supports VLANs.
+- May support link aggregation, spanning tree and port security.
+- Better suited to a segmented lab.
+
+**Layer 3 switch**
+
+- Can perform routing between IP networks.
+- May support routing protocols and advanced network features depending on the model.
+- Can be used where the network design requires routing at the switching layer.
+
+Do not assume every managed switch supports all Layer 3 capabilities.
+
+### 4.3 Wireless Access Point
+
+An access point connects wireless devices to a wired network.
+
+It can provide Wi-Fi access to:
+
+- Laptops.
+- Phones.
+- Tablets.
+- Wireless test equipment.
+
+Wireless guest access should be separated from trusted administration and infrastructure access wherever the equipment supports it.
+
+### 4.4 Network Interface Card
+
+A Network Interface Card (NIC) provides a physical or virtual network connection.
+
+Common physical server interfaces include:
+
+- 1 Gigabit Ethernet.
+- 2.5 Gigabit Ethernet.
+- 10 Gigabit Ethernet.
+
+The selected speed depends on the server hardware, switch, cabling and network requirements.
+
+A 10 GbE network interface connected to a 1 GbE switch will not provide a 10 GbE end-to-end link.
+
+### 4.5 Cabling
+
+Common Ethernet cable categories include:
+
+- Cat5e.
+- Cat6.
+- Cat6A.
+
+The practical speed and distance depend on the cable category, installation quality and network equipment.
+
+For the initial lab, reliable Cat5e or Cat6 cabling may be sufficient for Gigabit Ethernet.
+
+---
+
+## 5. Physical Network Topology
+
+A network topology describes how devices are physically or logically connected.
+
+### 5.1 Star Topology
+
+In a star topology, devices connect to a central switch.
+
+```text
+                  ROUTER
+                     |
+                     |
+                   SWITCH
+              /      |      \
+             /       |       \
+          SERVER   DESKTOP   ACCESS POINT
+```
+
+Advantages:
+
+- Easy to understand.
+- Simple to expand.
+- Individual device connections can be diagnosed.
+- A problem with one endpoint cable normally does not disconnect every other endpoint.
+
+A central switch failure, however, can affect all devices connected through it.
+
+### 5.2 Proposed Initial Physical Topology
+
+```text
+                 INTERNET
+                     |
+                  ISP MODEM
+                     |
+                   ROUTER
+                     |
+                  SWITCH
+                     |
+              +------+------+
+              |      |      |
+           SERVER  PC/LAPTOP  NAS
+              |
+          NETWORK PORT
+              |
+        SERVER OPERATING
+           PLATFORM
+              |
+       VIRTUAL NETWORK
+              |
+        +-----+------+
+        |     |      |
+       VM1   VM2    VM3
+```
+
+The initial physical network should remain simple.
+
+Start with the router, one switch if required, a server and an administration computer.
+
+Additional network devices can be introduced when the lab has a clear requirement for them.
+
+---
+
+## 6. IP Addressing Strategy
+
+IP addressing is one of the most important parts of network planning.
+
+A predictable address plan makes it easier to manage devices and troubleshoot connectivity.
+
+### 6.1 Private IPv4 Address Ranges
+
+The following IPv4 ranges are reserved for private network use:
+
+| Private range | CIDR range |
+|---|---|
+| 10.0.0.0 – 10.255.255.255 | 10.0.0.0/8 |
+| 172.16.0.0 – 172.31.255.255 | 172.16.0.0/12 |
+| 192.168.0.0 – 192.168.255.255 | 192.168.0.0/16 |
+
+These ranges are commonly used inside homes, offices and private labs.
+
+Do not assume the example subnet in this document matches your router's current network.
+
+### 6.2 Example Initial Address Plan
+
+For an initial single-subnet lab, consider this illustrative plan:
+
+Network: `192.168.10.0/24`
+
+| Device | Example IP | Purpose |
+|---|---|---|
+| Router | 192.168.10.1 | Default gateway |
+| Physical server | 192.168.10.10 | Server host |
+| Administration PC | 192.168.10.20 | Management workstation |
+| Network storage | 192.168.10.30 | File and backup storage |
+| Network switch | 192.168.10.2 | Switch management |
+| Access point | 192.168.10.3 | Wireless management |
+
+These values must be adjusted to avoid conflicts with the existing network.
+
+### 6.3 DHCP Address Pool
+
+An example DHCP range might be:
+
+`192.168.10.100 – 192.168.10.199`
+
+Infrastructure devices can use static addresses or DHCP reservations outside the pool, depending on the network design.
+
+Before assigning addresses:
+
+1. Inspect the router's current LAN configuration.
+2. Identify the current subnet.
+3. Identify the DHCP range.
+4. Check existing reserved addresses.
+5. Select unused addresses.
+6. Document the final plan.
+
+A duplicate IP address can cause intermittent or complete communication failures.
+
+### 6.4 Static IP vs DHCP Reservation
+
+**Static IP configuration**
+
+The device is manually configured with a fixed IP address.
+
+Advantages:
+
+- Predictable address.
+- Independent of a DHCP reservation.
+- Useful for infrastructure devices in some environments.
+
+Disadvantages:
+
+- Manual administration.
+- Risk of address conflicts.
+- Changes must be updated on the device.
+
+**DHCP reservation**
+
+The DHCP server assigns a predictable address to a device based on its identifying information, commonly its MAC address.
+
+Advantages:
+
+- Centralized address management.
+- Predictable assignments.
+- Easier to change network settings centrally.
+
+Disadvantages:
+
+- Depends on the DHCP server.
+- Requires the router or DHCP server to support reservations.
+
+Use the method supported by the actual network equipment.
+
+---
+
+## 7. Subnetting Fundamentals
+
+Subnetting divides an IP address space into smaller logical networks.
+
+It allows administrators to organize devices and control communication between different groups.
+
+### 7.1 Understanding CIDR Notation
+
+CIDR stands for Classless Inter-Domain Routing.
+
+Example:
+
+`192.168.10.0/24`
+
+The `/24` prefix means that 24 bits are used for the network prefix.
+
+For a conventional IPv4 `/24` subnet:
+
+- Subnet mask: `255.255.255.0`
+- Total addresses: 256
+- Normally usable host addresses: 254
+
+Another example:
+
+`192.168.10.0/26`
+
+This has a 26-bit network prefix.
+
+It contains 64 total addresses, normally with 62 usable host addresses in a conventional IPv4 subnet.
+
+### 7.2 Common IPv4 Prefixes
+
+| CIDR | Subnet mask | Total addresses | Normally usable hosts |
+|---|---|---:|---:|
+| /24 | 255.255.255.0 | 256 | 254 |
+| /25 | 255.255.255.128 | 128 | 126 |
+| /26 | 255.255.255.192 | 64 | 62 |
+| /27 | 255.255.255.224 | 32 | 30 |
+| /28 | 255.255.255.240 | 16 | 14 |
+| /29 | 255.255.255.248 | 8 | 6 |
+| /30 | 255.255.255.252 | 4 | 2 |
+
+The usable-host counts above are for ordinary IPv4 subnets, excluding the network and broadcast addresses.
+
+### 7.3 Example Subnet Design
+
+A segmented lab could use the following networks:
+
+| Network | Subnet | Intended purpose |
+|---|---|---|
+| Management | 192.168.10.0/24 | Administration of infrastructure |
+| Servers | 192.168.20.0/24 | Server workloads |
+| Lab | 192.168.30.0/24 | Experimental virtual machines |
+| Guest | 192.168.40.0/24 | Guest devices |
+| IoT | 192.168.50.0/24 | Smart and network-connected devices |
+
+These are example networks, not confirmed configurations.
+
+### 7.4 Why Subnetting Matters
+
+Subnetting helps:
+
+- Organize devices.
+- Reduce unnecessary broadcast traffic.
+- Separate different types of equipment.
+- Apply routing and firewall policies.
+- Make network documentation clearer.
+- Scale a network as the lab expands.
+
+A separate subnet does not automatically make devices secure. Routing and firewall rules must enforce the intended separation.
+
+---
+
+## 8. VLAN Architecture
+
+A Virtual Local Area Network (VLAN) divides a switched network into separate logical Layer 2 networks.
+
+VLANs help separate devices without requiring a completely separate physical switch for every network.
+
+### 8.1 Example VLAN Plan
+
+| VLAN ID | VLAN name | Example subnet | Purpose |
+|---:|---|---|---|
+| 10 | MANAGEMENT | 192.168.10.0/24 | Infrastructure administration |
+| 20 | SERVERS | 192.168.20.0/24 | Server workloads |
+| 30 | LAB | 192.168.30.0/24 | Experimental systems |
+| 40 | GUEST | 192.168.40.0/24 | Guest devices |
+| 50 | IOT | 192.168.50.0/24 | IoT devices |
+
+### 8.2 Why Use VLANs?
+
+Without VLANs, devices connected to the same unsegmented Layer 2 network may communicate directly, subject to their host firewalls and other controls.
+
+VLANs create separate Layer 2 broadcast domains.
+
+For example:
+
+- Management devices can be separated from experimental virtual machines.
+- Guest devices can be isolated from server management.
+- IoT equipment can be separated from sensitive systems.
+- Server workloads can have more restrictive network policies.
+
+### 8.3 VLAN Diagram
+
+```text
+                    ROUTER
+                       |
+                 VLAN-CAPABLE LINK
+                       |
+                MANAGED SWITCH
+                       |
+       +---------------+---------------+
+       |               |               |
+       |               |               |
+    VLAN 10          VLAN 20          VLAN 40
+  MANAGEMENT        SERVERS           GUEST
+       |               |               |
+   Admin PC        Server/VMs       Guest devices
+```
+
+The router or another Layer 3 device must provide routing between VLANs when communication is required.
+
+### 8.4 Access Ports
+
+An access port normally carries traffic for one assigned VLAN.
+
+Example:
+
+- A desktop connected to a management VLAN access port.
+- A guest device connected to a guest VLAN access port.
+
+The endpoint usually does not need to know the VLAN tag is present on the switch port.
+
+### 8.5 Trunk Ports
+
+A trunk port can carry traffic for multiple VLANs using VLAN tags, commonly IEEE 802.1Q.
+
+Example connections:
+
+- Router to managed switch.
+- Managed switch to a virtualization host.
+- Managed switch to another managed switch.
+
+The devices at both ends must be configured consistently.
+
+### 8.6 VLAN Requirements
+
+To use VLANs properly, confirm that the equipment supports the required functions:
+
+- VLAN-capable router or Layer 3 device.
+- Managed switch with 802.1Q support.
+- Compatible server NICs and drivers.
+- Operating system or hypervisor VLAN support.
+- Firewall policies between networks.
+- Correct access and trunk port configurations.
+
+Do not enable VLANs on a live management connection without a recovery plan.
+
+---
+
+## 9. Routing
+
+Routing moves IP packets between different IP networks.
+
+A router or Layer 3 device examines the destination IP address and selects an appropriate route.
+
+### 9.1 Default Route
+
+A default route is used when a more specific route is not available.
+
+A home router often provides the path from the private network to the internet.
+
+### 9.2 Inter-VLAN Routing
+
+Inter-VLAN routing allows devices in separate VLANs to communicate through a Layer 3 device.
+
+For example:
+
+```text
+VLAN 10: MANAGEMENT
+          |
+          |
+       ROUTER
+          |
+          |
+VLAN 20: SERVERS
+```
+
+The router can apply firewall policies to decide whether traffic from management devices is allowed to access server services.
+
+### 9.3 Routing Policy Examples
+
+| Source | Destination | Example policy |
+|---|---|---|
+| Management | Server network | Allow required administration |
+| Management | Lab network | Allow controlled access |
+| Guest | Management | Deny |
+| Guest | Servers | Deny by default |
+| IoT | Management | Deny by default |
+| Servers | Internet | Allow required outbound traffic |
+| Lab | Management | Deny by default unless needed |
+
+These are starting policy examples, not universal rules. Specific application requirements may justify exceptions.
+
+---
+
+## 10. DNS and DHCP Design
+
+### 10.1 DNS Design
+
+DNS should provide reliable name resolution for devices and applications.
+
+A possible lab naming scheme:
+
+| Hostname | Example name |
+|---|---|
+| Physical server | homelab-server-01 |
+| Development VM | dev-server-01 |
+| Database VM | database-01 |
+| Monitoring VM | monitoring-01 |
+| Network storage | nas-01 |
+
+A local DNS service can make internal systems easier to access by name.
+
+For example, an internal DNS system might resolve:
+
+`dev-server-01.example.internal`
+
+The actual internal domain should be selected carefully. Avoid using a real public domain name that you do not own or control. For home-network naming, follow current DNS naming guidance and your DNS platform's supported configuration.
+
+### 10.2 DHCP Design
+
+DHCP can be managed by:
+
+- The home router.
+- A dedicated DHCP service.
+- A network firewall.
+- Another supported network appliance.
+
+For the initial deployment, the existing router's DHCP service may be sufficient.
+
+For a multi-VLAN network, the DHCP design must account for each subnet.
+
+A DHCP relay may be needed when the DHCP server is located on a different subnet from the clients.
+
+### 10.3 DNS and DHCP Responsibilities
+
+| Service | Main responsibility |
+|---|---|
+| DNS | Resolves names to IP addresses and other DNS records |
+| DHCP | Assigns client network configuration |
+| DHCP reservation | Provides predictable addresses to selected devices |
+| DNS forwarding | Sends queries to another DNS resolver |
+| Local DNS records | Resolves internal device names |
+
+---
+
+## 11. Physical Server Networking
+
+The physical server connects the virtualization platform or operating system to the physical network.
+
+### 11.1 Single NIC Configuration
+
+A simple design can use one physical Ethernet interface.
+
+```text
+             PHYSICAL SERVER
+                    |
+                 NIC 1
+                    |
+                ETHERNET
+                    |
+              NETWORK SWITCH
+```
+
+Advantages:
+
+- Simple setup.
+- Lower hardware cost.
+- Suitable for a basic home lab.
+
+Limitations:
+
+- One physical connection carries the relevant traffic.
+- A single NIC or cable failure can disconnect the server.
+- Management and workload traffic may share one physical link.
+
+Logical separation using VLANs may still be possible when the switch, router and server configuration support it.
+
+### 11.2 Multiple NIC Configuration
+
+A server with multiple network interfaces can provide more flexibility.
+
+```text
+              PHYSICAL SERVER
+                    |
+          +---------+---------+
+          |                   |
+         NIC 1               NIC 2
+          |                   |
+     MANAGEMENT            WORKLOADS
+          |                   |
+          +---------+---------+
+                    |
+              NETWORK SWITCH
+```
+
+This is an illustrative logical arrangement, not a mandatory cabling design.
+
+Possible benefits include:
+
+- Separating selected traffic types.
+- Increasing available network bandwidth.
+- Building dedicated storage or management networks.
+- Providing redundancy when properly configured.
+
+Multiple NICs do not automatically provide higher availability. Redundancy requires compatible configuration, switching and network design.
+
+### 11.3 Link Aggregation
+
+Link aggregation combines multiple compatible physical network links into one logical connection.
+
+It may be used for:
+
+- Higher aggregate bandwidth across multiple traffic flows.
+- Link redundancy.
+- Network infrastructure design.
+
+Both ends must support and correctly configure the selected aggregation method.
+
+Link aggregation does not normally make one individual connection faster than the speed of one physical link.
+
+---
+
+## 12. Virtual Machine and Container Networking
+
+A virtualization platform creates virtual network interfaces for virtual machines.
+
+The virtual interfaces connect to a virtual switch or bridge, which can connect to the physical network.
+
+### 12.1 Linux Bridge Concept
+
+A Linux bridge behaves like a virtual Layer 2 switch.
+
+Example:
+
+```text
+             PHYSICAL NIC
+                  |
+                  |
+             LINUX BRIDGE
+             /     |     \
+            /      |      \
+          VM 1    VM 2    VM 3
+```
+
+The bridge allows virtual machines to communicate according to its network configuration.
+
+A bridge can connect virtual machine interfaces to a physical network interface, depending on the host configuration.
+
+### 12.2 Virtual Machine Network Modes
+
+**Bridged networking**
+
+A VM connects to a bridge that provides access to a physical or VLAN-backed network.
+
+The VM can appear as a separate device on that network.
+
+**Isolated virtual network**
+
+A virtual network allows VMs to communicate with each other without necessarily having direct access to the physical LAN.
+
+A router, NAT or other gateway may be added when controlled external connectivity is required.
+
+**NAT networking**
+
+A virtual machine uses a private virtual network and reaches other networks through address translation.
+
+The exact implementation depends on the virtualization platform.
+
+### 12.3 Container Networking
+
+Containers use virtual networking managed by the container platform and host operating system.
+
+Common networking concepts include:
+
+- Bridge networks.
+- Host networking.
+- Overlay networks.
+- Port publishing.
+- Container-to-container communication.
+- DNS-based service discovery.
+
+For Docker, a bridge network is commonly used for containers on a single host.
+
+Do not publish container ports to every network interface unless public or LAN access is actually required.
+
+### 12.4 Example Virtual Workload Plan
+
+| Workload | Example network | Purpose |
+|---|---|---|
+| Development VM | LAB | Application development |
+| Database VM | SERVERS | Database services |
+| Monitoring VM | SERVERS | Infrastructure monitoring |
+| Test VM | LAB | Experiments |
+| Docker containers | Based on host design | Application services |
+
+Actual network membership should follow the security requirements of each workload.
+
+---
+
+## 13. Firewall Architecture
+
+A firewall controls traffic according to defined rules.
+
+It can operate at different levels:
+
+- Router or network firewall.
+- Server operating system firewall.
+- Virtualization platform firewall.
+- Container or application-specific network controls.
+
+### 13.1 Basic Firewall Principles
+
+- Deny unsolicited inbound traffic by default.
+- Permit only required services.
+- Restrict management access to trusted devices.
+- Avoid exposing unnecessary services.
+- Review firewall rules regularly.
+- Log important security events.
+- Keep firewall software updated.
+
+### 13.2 Example Firewall Policy
+
+| Traffic | Example policy | Reason |
+|---|---|---|
+| Trusted admin PC to server management | Allow required ports | Administration |
+| Guest network to server management | Deny | Protect infrastructure |
+| Guest network to IoT network | Deny by default | Isolation |
+| Internet to server management | Deny | Prevent direct exposure |
+| Server to DNS resolver | Allow | Name resolution |
+| Server to approved update services | Allow | Software maintenance |
+| Lab VM to management network | Deny by default | Contain experiments |
+
+The exact ports and destinations should be based on services actually installed.
+
+### 13.3 Management Interface Protection
+
+Management interfaces are particularly sensitive.
+
+Examples include:
+
+- Router administration.
+- Switch administration.
+- Proxmox management.
+- SSH.
+- Server management dashboards.
+
+Keep these interfaces on a trusted management network whenever possible.
+
+Do not expose them directly to the public internet.
+
+### 13.4 Remote Access
+
+When remote administration is required, consider a properly secured VPN or another trusted private-access solution.
+
+Remote access should use:
+
+- Strong authentication.
+- Restricted access.
+- Current security updates.
+- Firewall policies.
+- Protected credentials.
+
+Avoid unnecessary router port forwarding.
+
+---
+
+## 14. Network Security and Segmentation
+
+Network segmentation is useful because not every device needs access to every other device.
+
+A guest phone, experimental virtual machine and infrastructure management workstation have different trust requirements.
+
+### 14.1 Suggested Security Zones
+
+| Zone | Trust level | Typical devices |
+|---|---|---|
+| Management | High | Administration PC and infrastructure management |
+| Servers | Controlled | Server workloads |
+| Lab | Lower | Experimental virtual machines |
+| Guest | Untrusted | Visitors' devices |
+| IoT | Restricted | Smart and network-connected devices |
+
+### 14.2 Example Access Principles
+
+**Management network**
+
+Only authorized administration devices should access sensitive infrastructure interfaces.
+
+**Server network**
+
+Allow only the services and communication paths required by workloads.
+
+**Lab network**
+
+Allow experiments without providing unrestricted access to production-like infrastructure.
+
+**Guest network**
+
+Allow internet access where appropriate, but block access to private management systems.
+
+**IoT network**
+
+Restrict access to other devices and allow only the communication needed for operation.
+
+VLANs provide logical separation, but security depends on the complete configuration of switches, routers, firewalls and endpoints.
+
+### 14.3 Safe Lab Experiments
+
+Network experiments can interrupt connectivity or expose services.
+
+Before testing:
+
+- Back up the current network configuration.
+- Understand the intended change.
+- Keep a recovery path.
+- Avoid changing the only management connection remotely.
+- Do not experiment on networks or devices without permission.
+- Test new firewall rules carefully.
+
+---
+
+## 15. Internet Connectivity and NAT
+
+### 15.1 Network Address Translation
+
+Network Address Translation (NAT) changes IP addressing information as traffic passes through a network device.
+
+Home routers commonly use NAT to allow multiple private devices to share an internet connection.
+
+### 15.2 Port Forwarding
+
+Port forwarding directs incoming traffic on a particular router port to a device inside the private network.
+
+This can make an internal service reachable from the internet.
+
+However, exposing a home lab service introduces security risks.
+
+Do not forward management ports such as SSH or virtualization management interfaces directly to the public internet without a properly designed security solution.
+
+Prefer private remote access through a secure VPN or another appropriately protected architecture.
+
+### 15.3 Public and Private IP Addresses
+
+A private IP address is used within private networks.
+
+A public IP address is globally routable, subject to internet routing and firewall controls.
+
+Some internet providers use Carrier-Grade NAT (CGNAT). In that situation, a residential router may not have a directly reachable public IPv4 address.
+
+This can affect inbound remote-access designs.
+
+Do not publish your actual public IP address in the project repository.
+
+---
+
+## 16. IPv6 Considerations
+
+IPv6 is the newer Internet Protocol and uses a much larger address space than IPv4.
+
+A modern home lab may receive IPv6 connectivity from its internet provider and router.
+
+Important concepts include:
+
+- IPv6 addresses.
+- Prefixes.
+- Router advertisements.
+- Neighbor Discovery.
+- SLAAC.
+- DHCPv6.
+- IPv6 firewall rules.
+
+IPv6 does not use IPv4-style NAT as a universal security mechanism.
+
+A network with IPv6 should have appropriate firewall controls and should not assume private IPv4 network rules automatically protect IPv6 traffic.
+
+For the initial lab, understand how the router handles IPv6 before enabling additional services or making changes.
+
+---
+
+## 17. Network Monitoring
+
+Monitoring provides visibility into network health and performance.
+
+Useful measurements include:
+
+- Link status.
+- Link speed.
+- Bandwidth usage.
+- Packet loss.
+- Latency.
+- Interface errors.
+- Connected device availability.
+- DNS response.
+- Service availability.
+
+### 17.1 Example Monitoring Plan
+
+| Component | What to monitor |
+|---|---|
+| Router | Availability and internet connectivity |
+| Switch | Port status and link speed |
+| Server NIC | Link state, traffic and errors |
+| Virtual machines | Network connectivity |
+| DNS service | Resolution success |
+| DHCP service | Address assignment |
+| Firewall | Blocked and allowed traffic |
+| Internet link | Availability and latency |
+
+### 17.2 Monitoring Tools
+
+Examples of tools that may be useful:
+
+- Wireshark — packet analysis.
+- tcpdump — command-line packet capture.
+- Netdata — system and infrastructure monitoring.
+- Prometheus — metrics collection.
+- Grafana — metrics visualization.
+- Zabbix — infrastructure monitoring.
+- LibreNMS — network monitoring.
+
+Select tools according to the scale of the lab.
+
+Packet captures and monitoring logs can contain sensitive information. Review them before sharing publicly.
+
+---
+
+## 18. Network Testing and Troubleshooting
+
+Troubleshooting should follow a structured process.
+
+Start with the physical connection and move toward higher network layers.
+
+### 18.1 Basic Troubleshooting Sequence
+
+1. Check power and physical connections.
+2. Check Ethernet cable and link lights.
+3. Check the network interface status.
+4. Check the device IP address.
+5. Check the subnet configuration.
+6. Check the default gateway.
+7. Test local network connectivity.
+8. Test DNS resolution.
+9. Check firewall rules.
+10. Check the destination service.
+
+Do not change multiple settings at the same time. Make one controlled change and test the result.
+
+### 18.2 Linux Network Commands
+
+These commands are useful on a Linux server.
+
+**Show network interfaces and addresses**
+
+```bash
+ip address
+```
+
+**Show the routing table**
+
+```bash
+ip route
+```
+
+**Test connectivity to the router**
+
+```bash
+ping 192.168.10.1
+```
+
+Replace the example address with the actual gateway.
+
+**Test connectivity to another device**
+
+```bash
+ping 192.168.10.20
+```
+
+**Check DNS resolution**
+
+```bash
+nslookup example.com
+```
+
+**Alternative DNS lookup**
+
+```bash
+dig example.com
+```
+
+**Display listening network sockets**
+
+```bash
+ss -tuln
+```
+
+**Trace the route to a destination**
+
+```bash
+traceroute example.com
+```
+
+The `traceroute` utility may need to be installed. Some networks block or limit the traffic it uses.
+
+### 18.3 Common Network Problems
+
+| Problem | Possible cause | Initial investigation |
+|---|---|---|
+| No network connection | Cable, switch or NIC issue | Check physical link |
+| No IP address | DHCP failure | Check DHCP service |
+| Duplicate IP address | Conflicting assignments | Review address allocation |
+| Local devices unreachable | Incorrect subnet or VLAN | Check IP and VLAN configuration |
+| Internet unavailable | Gateway, DNS or ISP issue | Test gateway and DNS separately |
+| Website name does not resolve | DNS problem | Test with DNS lookup tools |
+| VM cannot reach LAN | Incorrect bridge or virtual NIC configuration | Review VM networking |
+| VLAN traffic fails | Trunk or access port mismatch | Check VLAN configuration |
+| Slow network | Congestion, faulty cable or link negotiation | Review port speed and error counters |
+| Remote access fails | Firewall, NAT or VPN configuration | Review the access path |
+
+### 18.4 Troubleshooting Record
+
+| Date | Problem | Investigation | Resolution | Result |
+|---|---|---|---|---|
+| Not recorded | No issues documented yet | — | — | — |
+
+---
+
+## 19. Network Inventory
+
+Record the actual network equipment used in the lab.
+
+### 19.1 Router
+
+| Field | Value |
+|---|---|
+| Manufacturer | To be verified |
+| Model | To be verified |
+| Firmware version | To be verified |
+| LAN interface speed | To be verified |
+| WAN interface speed | To be verified |
+| VLAN support | To be verified |
+| DHCP support | To be verified |
+| DNS functionality | To be verified |
+| Firewall capabilities | To be verified |
+| Inventory status | Not recorded |
+
+### 19.2 Switch
+
+| Field | Value |
+|---|---|
+| Manufacturer | To be verified |
+| Model | To be verified |
+| Switch type | Unmanaged / managed / Layer 3 |
+| Number of ports | To be verified |
+| Port speed | To be verified |
+| VLAN support | To be verified |
+| 802.1Q support | To be verified |
+| PoE support | To be verified |
+| Firmware version | To be verified |
+| Inventory status | Not recorded |
+
+### 19.3 Network Interfaces
+
+| Device | Interface | Model | Link speed | Purpose |
+|---|---|---|---|---|
+| Server | NIC 1 | To be verified | Unknown | Main server connection |
+| Server | NIC 2 | To be verified | Unknown | Optional additional connection |
+| Desktop | NIC 1 | To be verified | Unknown | Administration |
+
+### 19.4 Cabling
+
+| Cable ID | Category | Connected devices | Approximate length | Status |
+|---|---|---|---|---|
+| Cable 1 | To be verified | Router to switch | Unknown | Not inspected |
+| Cable 2 | To be verified | Switch to server | Unknown | Not inspected |
+| Cable 3 | To be verified | Switch to workstation | Unknown | Not inspected |
+
+Do not publish full MAC addresses, Wi-Fi credentials or sensitive network identifiers.
+
+---
+
+## 20. Network Configuration Record
+
+Complete this section when the physical network is available.
+
+| Field | Recorded value |
+|---|---|
+| Network design | Not yet finalized |
+| Router model | Not yet recorded |
+| Switch model | Not yet recorded |
+| Primary subnet | Not yet recorded |
+| Default gateway | Private record |
+| DHCP server | Not yet identified |
+| DNS resolver | Not yet identified |
+| Server IP | Private record |
+| Server interface | Not yet identified |
+| VLAN configuration | Not yet implemented |
+| Firewall rules | Not yet implemented |
+| Remote access method | Not yet selected |
+| Network verification | Not started |
+
+---
+
+## 21. Network Implementation Roadmap
+
+Build the network in stages. Do not start with unnecessary complexity.
+
+### Phase 1: Basic Connectivity
+
+- [ ] Identify the router.
+- [ ] Identify the existing home network subnet.
+- [ ] Identify the DHCP range.
+- [ ] Identify the server Ethernet interface.
+- [ ] Connect the server by Ethernet.
+- [ ] Confirm that the server receives a valid IP address.
+- [ ] Test communication with the router.
+- [ ] Test internet connectivity.
+- [ ] Document the working configuration.
+
+### Phase 2: Infrastructure Addressing
+
+- [ ] Select a server hostname.
+- [ ] Select a predictable server IP.
+- [ ] Configure a static IP or DHCP reservation.
+- [ ] Record the network configuration.
+- [ ] Confirm that there are no address conflicts.
+- [ ] Test access from the administration computer.
+
+### Phase 3: Server and Virtual Machine Networking
+
+- [ ] Configure the server network.
+- [ ] Configure the virtualization bridge if a hypervisor is selected.
+- [ ] Create one test VM.
+- [ ] Connect the VM to the intended virtual network.
+- [ ] Verify VM connectivity.
+- [ ] Verify that firewall rules are understood.
+
+### Phase 4: Network Segmentation
+
+Only after the basic network is stable:
+
+- [ ] Confirm router VLAN support.
+- [ ] Confirm managed switch VLAN support.
+- [ ] Design VLAN IDs and subnets.
+- [ ] Define access and trunk ports.
+- [ ] Configure VLAN routing.
+- [ ] Configure firewall policies.
+- [ ] Test each network segment.
+- [ ] Test permitted and blocked communication paths.
+- [ ] Document the final configuration.
+
+### Phase 5: Advanced Networking
+
+- [ ] Add a separate management network if required.
+- [ ] Implement a dedicated lab network.
+- [ ] Evaluate network storage requirements.
+- [ ] Configure monitoring.
+- [ ] Evaluate VPN-based remote access.
+- [ ] Test recovery from network configuration errors.
+- [ ] Review security and performance.
+
+---
+
+## 22. Network Acceptance Checklist
+
+The network should meet the following basic requirements before it is considered operational.
+
+### Physical Connectivity
+
+- [ ] Router is operational.
+- [ ] Switch is operational, if used.
+- [ ] Server Ethernet connection is active.
+- [ ] Administration computer is connected.
+- [ ] No obvious cable or link problems remain.
+
+### IP Configuration
+
+- [ ] Server has a valid IP address.
+- [ ] Subnet configuration is correct.
+- [ ] Default gateway is correct.
+- [ ] DNS resolution works.
+- [ ] No known duplicate IP addresses exist.
+
+### Server Connectivity
+
+- [ ] Administration computer can reach the server.
+- [ ] Server can reach the gateway.
+- [ ] Server can access required network services.
+- [ ] Remote administration works if enabled.
+- [ ] Virtual machine networking works if configured.
+
+### Security
+
+- [ ] Management interfaces are restricted.
+- [ ] Unnecessary internet exposure is avoided.
+- [ ] Firewall policies are documented.
+- [ ] Guest network isolation is reviewed where applicable.
+- [ ] Credentials and sensitive information are not stored in public documentation.
+
+---
+
+## 23. Network Design Decision Record
+
+Record the decisions made as the lab develops.
+
+| Design area | Decision | Reason |
+|---|---|---|
+| Physical topology | Not finalized | Awaiting equipment assessment |
+| Router | Not selected | Existing equipment to be checked |
+| Switch | Not selected | Requirements to be assessed |
+| IP address plan | Example only | Actual network not yet inspected |
+| VLAN architecture | Planned | Depends on equipment support |
+| DNS | Not selected | Depends on lab architecture |
+| DHCP | Existing router to be assessed | Initial network may use router DHCP |
+| Firewall | Not selected | Depends on router and server platform |
+| Remote access | Not selected | Security design required |
+
+### Decision History
+
+| Date | Decision | Reason |
+|---|---|---|
+| Initial documentation | Network architecture documented | Establish the design before implementation |
+
+---
+
+## 24. Repository Security Notes
+
+This document is part of the public project documentation.
+
+Keep sensitive operational information private.
+
+Never publish:
+
+- Router passwords.
+- Wi-Fi passwords.
+- SSH private keys.
+- VPN credentials.
+- API tokens.
+- Full MAC addresses.
+- Public IP addresses associated with personal infrastructure.
+- Exact home addresses.
+- Sensitive firewall configurations.
+- Unredacted network captures.
+- Access details for private services.
+
+Use example addresses and placeholders in public documentation.
+
+Keep sensitive configuration files outside the public repository.
+
+---
+
+## 25. Current Project Status
+
+| Activity | Status |
+|---|---|
+| Networking fundamentals documented | Complete |
+| Physical topology documented | Complete |
+| IP addressing strategy documented | Complete |
+| Subnetting explained | Complete |
+| VLAN architecture documented | Complete |
+| Routing documented | Complete |
+| DNS and DHCP documented | Complete |
+| Server networking documented | Complete |
+| Virtual networking documented | Complete |
+| Firewall principles documented | Complete |
+| Network inventory template created | Complete |
+| Actual equipment identified | Not started |
+| Actual network inspected | Not started |
+| Final IP plan selected | Not started |
+| VLANs configured | Not started |
+| Network verified | Not started |
+
+**Current project stage:** Network architecture documented. Physical equipment assessment and implementation are pending.
