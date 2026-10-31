@@ -1,0 +1,1168 @@
+
+# Home Lab Server Operating System
+
+## 1. Purpose
+
+This document explains how to select, install, configure and maintain the operating system or virtualization platform used by the home lab server.
+
+The operating system is the software foundation of the infrastructure. It manages hardware resources and provides the environment in which server applications, databases, containers, virtual machines and network services operate.
+
+This guide covers:
+
+- Choosing an appropriate server operating system.
+- Understanding bare-metal operating systems and hypervisors.
+- Planning the installation.
+- Preparing installation media.
+- Installing the selected platform.
+- Configuring storage and networking.
+- Creating administrative accounts.
+- Applying updates and basic security controls.
+- Testing the installation.
+- Documenting the final configuration.
+
+**Important:** No operating system has been selected or installed at this stage. Record actual choices and results as the project progresses.
+
+---
+
+## 2. Understanding the Two Main Installation Approaches
+
+There are two main approaches to building the server.
+
+### 2.1 Approach A: Install a Server Operating System Directly
+
+In this arrangement, Linux runs directly on the physical server.
+
+```text
+Physical Server
+       |
+       v
+Linux Server Operating System
+       |
+       +----------------------+
+       |                      |
+       v                      v
+   Docker                 Server Apps
+       |
+       +----------------------+
+       |
+       v
+  Containers
+```
+
+The operating system manages the physical hardware and runs applications and services.
+
+Examples of workloads include:
+
+- Web servers.
+- Go, Python, JavaScript and .NET applications.
+- Databases.
+- Docker containers.
+- Monitoring systems.
+- File-sharing services.
+- Network services.
+
+**Advantages:**
+
+- Straightforward architecture.
+- Good for learning Linux administration.
+- Low virtualization overhead.
+- Direct access to hardware.
+- Suitable for application hosting and container workloads.
+
+**Disadvantages:**
+
+- Virtual machine management requires additional software.
+- Separating experimental environments requires more planning.
+- Multiple operating systems are less convenient to manage without a hypervisor.
+
+### 2.2 Approach B: Install a Hypervisor Directly
+
+A hypervisor manages the server hardware and provides virtual machines.
+
+For example, Proxmox VE is a virtualization platform that can run on a physical server.
+
+```text
+Physical Server
+       |
+       v
+Proxmox VE
+       |
+       +--------------------------+
+       |            |             |
+       v            v             v
+    VM 1          VM 2          VM 3
+   Ubuntu        Debian        Windows
+       |            |             |
+       v            v             v
+   Docker       Database      Test Apps
+  Services      Services
+```
+
+A hypervisor lets you allocate physical CPU, memory, storage and network resources to separate virtual machines.
+
+Possible uses:
+
+- A Linux virtual machine for Docker.
+- A virtual machine for databases.
+- A Windows test environment.
+- A network services environment.
+- A development and testing server.
+- A monitoring and logging environment.
+
+**Advantages:**
+
+- Run multiple operating systems on one physical server.
+- Isolate different workloads.
+- Create and manage virtual machines.
+- Use snapshots where supported and appropriate.
+- Experiment without repeatedly reinstalling the physical server.
+- Build a more realistic infrastructure lab.
+
+**Disadvantages:**
+
+- More complicated than installing Linux directly.
+- Requires adequate RAM and storage.
+- Adds another management layer.
+- Requires careful planning of storage, networking and backups.
+
+### 2.3 Which Approach Is the Project Target?
+
+The long-term target is a home lab capable of running multiple infrastructure services and experimenting with virtual machines, containers and networking.
+
+A bare-metal hypervisor is therefore a suitable target architecture.
+
+However, a direct Linux installation is also a valid learning path, particularly when the available hardware is limited.
+
+The final selection should depend on:
+
+1. CPU virtualization support.
+2. Available RAM.
+3. Available storage.
+4. Network interface compatibility.
+5. Hardware compatibility with the selected platform.
+6. Electricity consumption.
+7. The workloads planned for the server.
+
+Do not select a platform before checking the actual hardware.
+
+---
+
+## 3. Operating System Options
+
+The following platforms are candidates for the home lab.
+
+### 3.1 Proxmox VE
+
+**Category:** Bare-metal virtualization platform.
+
+Proxmox VE is designed for managing virtual machines and containers through a web-based management interface.
+
+It uses a Linux-based platform and supports technologies including KVM virtualization and Linux Containers (LXC).
+
+Potential uses:
+
+- Running multiple Linux virtual machines.
+- Running Windows virtual machines for testing.
+- Creating isolated development environments.
+- Hosting infrastructure services.
+- Experimenting with virtual networking.
+- Managing storage for virtual machines.
+- Learning virtualization administration.
+
+**Advantages:**
+
+- Web-based management interface.
+- Virtual machine management.
+- Container management.
+- Support for multiple storage configurations.
+- Useful for building a multi-server-style lab on one physical machine.
+
+**Considerations:**
+
+- Requires virtualization-capable hardware.
+- Virtual machines consume physical RAM and CPU resources.
+- Storage planning is important.
+- Backups must be configured separately.
+- Some hardware passthrough configurations require additional planning.
+
+Official documentation:
+
+https://www.proxmox.com/en/
+
+https://pve.proxmox.com/pve-docs/
+
+### 3.2 Ubuntu Server
+
+**Category:** General-purpose Linux server operating system.
+
+Ubuntu Server is suitable for hosting applications, databases, networking services and container workloads.
+
+Potential uses:
+
+- Docker and container services.
+- Go backend applications.
+- Web servers.
+- PostgreSQL and MySQL databases.
+- Monitoring platforms.
+- File services.
+- Development environments.
+
+**Advantages:**
+
+- Broad server software ecosystem.
+- Extensive documentation and learning resources.
+- Suitable for beginner and professional Linux administration.
+- Commonly used for cloud and application workloads.
+- Available in Long Term Support releases.
+
+**Considerations:**
+
+- Requires additional software if virtual machine management is needed.
+- Server security and maintenance remain the administrator's responsibility.
+- The selected release must still be supported.
+
+Official documentation:
+
+https://ubuntu.com/server/docs
+
+### 3.3 Debian
+
+**Category:** General-purpose Linux server operating system.
+
+Debian is a stable Linux distribution suitable for servers and infrastructure services.
+
+Potential uses:
+
+- Web hosting.
+- Application hosting.
+- Databases.
+- Networking services.
+- Container workloads.
+- Lightweight virtual machines.
+
+**Advantages:**
+
+- Stable release approach.
+- Large software package ecosystem.
+- Suitable for minimal server installations.
+- Good foundation for Linux administration.
+
+**Considerations:**
+
+- Some packages may be older than those in other distributions.
+- Newer software may require additional repositories or installation methods.
+- The administrator must understand system updates and package management.
+
+Official documentation:
+
+https://www.debian.org/doc/
+
+### 3.4 Windows Server
+
+**Category:** Enterprise server operating system.
+
+Windows Server is designed for business and enterprise infrastructure.
+
+Potential uses:
+
+- Active Directory Domain Services.
+- Windows-based network environments.
+- Windows application hosting.
+- File and print services.
+- Windows-based testing.
+- Hyper-V virtualization.
+
+**Advantages:**
+
+- Useful for learning Windows enterprise infrastructure.
+- Supports Microsoft server technologies.
+- Relevant to environments built around Microsoft services.
+
+**Considerations:**
+
+- Licensing requirements must be understood.
+- Some features depend on the selected edition.
+- Hardware and resource requirements must be checked.
+- It is not necessary for a Linux-focused initial home lab.
+
+Official documentation:
+
+https://learn.microsoft.com/en-us/windows-server/
+
+---
+
+## 4. Platform Comparison
+
+| Platform | Main purpose | Web management | Virtualization role | Suitable for this lab |
+|---|---|---|---|---|
+| Proxmox VE | Virtualization management | Yes | Primary platform | Strong candidate |
+| Ubuntu Server | General Linux server | Not included by default | Can host virtual machines using additional software | Strong candidate |
+| Debian | General Linux server | Not included by default | Can host virtual machines using additional software | Strong candidate |
+| Windows Server | Enterprise Windows services | Management tools available | Supports Hyper-V | Optional learning platform |
+
+### Selection Guidance
+
+For a home lab focused on virtualization, multiple operating systems, infrastructure and networking, consider Proxmox VE as the physical server platform.
+
+For a simpler initial server focused on Linux, Docker, databases and application development, consider Ubuntu Server or Debian.
+
+Windows Server can be added later as a virtual machine if the hardware and licensing requirements allow it.
+
+The best option is not automatically the platform with the most features. It is the one that fits the hardware, budget and learning objectives.
+
+---
+
+## 5. Hardware Requirements and Compatibility
+
+Before installing an operating system, verify that the physical server is suitable.
+
+### 5.1 CPU
+
+Check:
+
+- Exact CPU model.
+- CPU architecture.
+- Number of cores and threads.
+- Virtualization support.
+- IOMMU support if device passthrough is required.
+- Compatibility with the selected operating system or hypervisor.
+
+For virtual machines, hardware virtualization support is important.
+
+Intel processors commonly provide Intel VT-x, while AMD processors commonly provide AMD-V.
+
+IOMMU support is useful for certain device passthrough configurations. It is not a requirement for every basic home lab.
+
+### 5.2 RAM
+
+Record:
+
+- Total physical memory.
+- Memory generation.
+- Memory speed.
+- ECC capability, if applicable.
+- Maximum supported capacity.
+- Available upgrade slots.
+
+The physical host needs memory for its own operation, in addition to memory allocated to virtual machines and other workloads.
+
+Avoid allocating all physical RAM to virtual machines. Leave sufficient memory for the host and its management services.
+
+### 5.3 Storage
+
+Identify:
+
+- Boot drive.
+- Virtual machine storage.
+- Container storage.
+- Database storage.
+- Backup destination.
+
+A simple initial configuration could use one drive for the operating system and another for virtual machine data.
+
+This is only an example. Actual storage design depends on the available drives, reliability requirements and budget.
+
+### 5.4 Network
+
+Confirm:
+
+- Ethernet controller compatibility.
+- Driver availability.
+- Supported link speed.
+- Router and switch compatibility.
+- DHCP or static address requirements.
+
+A wired Ethernet connection is generally preferable for a server because it provides a more predictable connection than Wi-Fi.
+
+### 5.5 Compatibility Checklist
+
+- [ ] CPU architecture is supported.
+- [ ] CPU virtualization is supported.
+- [ ] Required virtualization features are available in firmware.
+- [ ] RAM capacity is sufficient.
+- [ ] Storage devices are detected.
+- [ ] Network interfaces are supported.
+- [ ] The system can boot from the intended installation media.
+- [ ] The motherboard firmware is suitable.
+- [ ] Cooling is adequate.
+- [ ] Power supply is suitable.
+
+---
+
+## 6. Installation Planning
+
+Before installing the selected platform, complete the following planning record.
+
+### 6.1 Installation Decision
+
+| Field | Planned value |
+|---|---|
+| Physical server name | To be assigned |
+| Selected platform | Not yet selected |
+| Platform version | To be recorded |
+| Installation date | Not scheduled |
+| Installation method | USB installation media |
+| Boot mode | To be verified |
+| System drive | To be selected |
+| Data storage | To be selected |
+| Network connection | Ethernet preferred |
+| Management method | Local console and/or web interface |
+| Backup destination | To be selected |
+| Installation status | Not started |
+
+### 6.2 Installation Preparation
+
+- [ ] Confirm the exact hardware configuration.
+- [ ] Confirm platform compatibility.
+- [ ] Read the official installation guide.
+- [ ] Download the installation image from the official source.
+- [ ] Verify the download checksum where provided.
+- [ ] Prepare a suitable USB drive.
+- [ ] Back up any important data on the target computer.
+- [ ] Identify the intended installation drive.
+- [ ] Record the existing BIOS/UEFI settings.
+- [ ] Prepare an Ethernet connection.
+- [ ] Decide the initial management IP configuration.
+- [ ] Ensure the system has a reliable power source.
+
+**Warning:** Installing an operating system can erase data on the selected drive. Verify the target disk before beginning installation.
+
+---
+
+## 7. Preparing Installation Media
+
+Most server operating systems provide an ISO image.
+
+An ISO image is a file containing the installation environment.
+
+A bootable USB drive allows the physical server to start the installation environment.
+
+### General Preparation Process
+
+1. Visit the official website of the selected platform.
+2. Download the correct installation image.
+3. Check the published checksum or signature where available.
+4. Use a suitable USB imaging application.
+5. Select the downloaded ISO file.
+6. Select the correct USB drive.
+7. Write the installation image to the USB drive.
+8. Safely remove the USB drive.
+9. Insert it into the target server.
+
+Examples of commonly used USB imaging applications include:
+
+- Rufus.
+- balenaEtcher.
+- Ventoy.
+
+Use the official download sources and follow their current instructions.
+
+Do not assume that copying an ISO file onto a USB drive makes it bootable.
+
+### Installation Media Record
+
+| Field | Value |
+|---|---|
+| Platform | To be selected |
+| ISO filename | To be recorded |
+| ISO version | To be recorded |
+| Download source | Official website |
+| Checksum verified | Not yet verified |
+| USB drive capacity | To be recorded |
+| Imaging application | To be recorded |
+| Media preparation date | Not recorded |
+
+---
+
+## 8. BIOS/UEFI Preparation
+
+BIOS/UEFI firmware controls important hardware settings before the operating system starts.
+
+Before installation, inspect the firmware configuration.
+
+### Settings to Review
+
+| Setting | Purpose | Planned configuration |
+|---|---|---|
+| Boot mode | Controls boot method | UEFI where supported |
+| Boot priority | Determines boot device order | USB during installation |
+| CPU virtualization | Enables hardware-assisted virtualization | Enable if required |
+| IOMMU | Supports certain device passthrough configurations | Optional |
+| Secure Boot | Helps verify the boot software | Follow platform requirements |
+| SATA mode | Controls SATA controller operation | Verify compatibility |
+| Wake-on-LAN | Allows network-based wake-up | Optional |
+
+### Firmware Procedure
+
+1. Restart the physical server.
+2. Open the BIOS/UEFI setup utility.
+3. Record the existing firmware version.
+4. Identify the boot configuration.
+5. Check CPU virtualization settings.
+6. Check IOMMU settings if needed.
+7. Review storage controller settings.
+8. Save only the changes that are required.
+9. Restart the system.
+
+The exact menu names differ between motherboard manufacturers.
+
+Do not change firmware settings randomly. Consult the motherboard manual.
+
+---
+
+## 9. Installing the Selected Platform
+
+The installation procedure depends on the platform.
+
+The following steps provide a general process. Follow the official installation documentation for the exact version selected.
+
+### 9.1 General Installation Process
+
+1. Insert the prepared USB installation drive.
+2. Power on the physical server.
+3. Open the boot-device menu.
+4. Select the USB installation device.
+5. Start the installer.
+6. Select the appropriate language and keyboard layout.
+7. Review the installation and licensing information.
+8. Select the intended installation disk.
+9. Configure partitions or storage according to the platform.
+10. Configure initial administrator details.
+11. Configure network settings if requested.
+12. Complete installation.
+13. Remove the USB installation drive when instructed.
+14. Restart the server.
+15. Confirm that the installed platform starts successfully.
+
+**Critical:** Double-check the selected installation disk. Do not select a disk containing important data.
+
+### 9.2 Direct Linux Installation
+
+For a Linux server installation:
+
+1. Select the server installation option.
+2. Select the correct installation disk.
+3. Choose a supported filesystem and partition layout.
+4. Configure the system hostname.
+5. Create an administrative user.
+6. Configure network settings.
+7. Install the base operating system.
+8. Complete the first boot.
+9. Apply available security updates.
+10. Verify the system is accessible locally.
+
+### 9.3 Proxmox VE Installation
+
+For a Proxmox VE installation:
+
+1. Review the official Proxmox VE installation guide.
+2. Prepare the Proxmox installation USB.
+3. Boot the physical server from the USB device.
+4. Start the installer.
+5. Select the correct installation disk.
+6. Review the filesystem and storage options.
+7. Configure the country, time zone and keyboard.
+8. Set a strong administrative password.
+9. Provide an email address for system notifications.
+10. Configure the management network.
+11. Confirm the installation settings.
+12. Install the platform.
+13. Remove the installation USB when instructed.
+14. Restart the physical server.
+15. Access the web management interface from another computer on the network.
+
+Proxmox VE normally provides a web management interface over HTTPS.
+
+Use the management address displayed or configured during installation. Do not assume that it will have a particular IP address.
+
+Official installation documentation:
+
+https://pve.proxmox.com/pve-docs/pve-admin-guide.html#installation
+
+---
+
+## 10. Initial Network Configuration
+
+Networking is essential because the server needs to communicate with other devices and provide services.
+
+### 10.1 Hostname
+
+Assign a meaningful hostname to the server.
+
+Example:
+
+`homelab-server-01`
+
+A hostname should:
+
+- Identify the device.
+- Be easy to remember.
+- Avoid spaces.
+- Be consistent with the naming scheme used in the lab.
+
+### 10.2 IP Address
+
+The server needs an address on the local network.
+
+There are two common approaches:
+
+**DHCP:**
+
+The router or DHCP server assigns an address automatically.
+
+**Static IP or DHCP reservation:**
+
+The server uses a predictable address. A DHCP reservation is often a convenient way to achieve this while keeping address management on the router.
+
+For a server that hosts management services, a predictable address is useful.
+
+Before configuring an address:
+
+- Check the existing router configuration.
+- Identify the current subnet.
+- Check the DHCP address pool.
+- Avoid address conflicts.
+- Record the chosen address privately if the repository is public.
+
+### 10.3 Example Network Plan
+
+These are illustrative example values, not instructions to copy blindly.
+
+| Component | Example address | Purpose |
+|---|---|---|
+| Router | 192.168.10.1 | Network gateway |
+| Physical server | 192.168.10.10 | Server management |
+| Development VM | 192.168.10.20 | Development workloads |
+| Database VM | 192.168.10.30 | Database services |
+| Monitoring VM | 192.168.10.40 | Monitoring services |
+
+Use an address plan compatible with the actual home network.
+
+### 10.4 Network Configuration Record
+
+| Field | Value |
+|---|---|
+| Hostname | To be assigned |
+| Network interface | To be identified |
+| Address assignment | DHCP / static / reservation |
+| Management IP | Private record |
+| Subnet mask or prefix | Private record |
+| Default gateway | Private record |
+| DNS server | To be selected |
+| VLAN | To be planned |
+| Ethernet link speed | To be verified |
+
+Do not publish sensitive network details in a public GitHub repository.
+
+---
+
+## 11. Initial Linux Server Configuration
+
+This section applies when Ubuntu Server or Debian is installed directly on the physical hardware, or inside a virtual machine.
+
+The exact package commands may vary by distribution and release.
+
+### 11.1 Log In Locally
+
+After installation, log in using the administrative account created during setup.
+
+Avoid using a shared or easily guessed password.
+
+### 11.2 Check System Information
+
+Common Linux commands include:
+
+```bash
+hostnamectl
+```
+
+Displays system hostname and operating system information.
+
+```bash
+uname -a
+```
+
+Displays kernel information.
+
+```bash
+lscpu
+```
+
+Displays CPU details.
+
+```bash
+free -h
+```
+
+Displays memory usage.
+
+```bash
+lsblk
+```
+
+Displays block devices and storage layout.
+
+```bash
+ip address
+```
+
+Displays network interfaces and IP addresses.
+
+```bash
+df -h
+```
+
+Displays filesystem capacity and available space.
+
+These commands help verify that the operating system recognizes the installed hardware.
+
+### 11.3 Apply Software Updates
+
+On Ubuntu Server and Debian systems using APT, common update commands are:
+
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
+The first command refreshes package information. The second installs available package upgrades.
+
+Review proposed changes before confirming them.
+
+Restart the system when required by important updates, such as kernel updates.
+
+### 11.4 Create a Normal Administrative User
+
+Use a personal administrative account for routine management instead of relying on direct root login.
+
+On Debian-based systems, an example is:
+
+```bash
+sudo adduser labadmin
+```
+
+On systems using the sudo group, an example is:
+
+```bash
+sudo usermod -aG sudo labadmin
+```
+
+Replace `labadmin` with your chosen username.
+
+Check the distribution's official documentation before changing administrative permissions.
+
+### 11.5 Configure SSH
+
+SSH provides secure remote terminal access.
+
+On a Linux server, check whether SSH is installed and running.
+
+For Debian-based systems, an example installation command is:
+
+```bash
+sudo apt install openssh-server
+```
+
+Check the service:
+
+```bash
+sudo systemctl status ssh
+```
+
+A safer remote-access configuration generally includes:
+
+- SSH key authentication.
+- Strong account security.
+- Restricted administrative access.
+- Avoiding unnecessary internet exposure.
+- Keeping SSH software updated.
+- Disabling password-based authentication only after key access has been tested successfully.
+
+Do not lock yourself out by changing SSH settings before confirming that the alternative login method works.
+
+### 11.6 Verify the System
+
+Run appropriate checks:
+
+```bash
+hostnamectl
+```
+
+```bash
+free -h
+```
+
+```bash
+lsblk
+```
+
+```bash
+ip address
+```
+
+```bash
+systemctl --failed
+```
+
+Record any unexpected errors and investigate them before hosting important workloads.
+
+---
+
+## 12. Initial Proxmox VE Configuration
+
+This section applies only if Proxmox VE is selected and installed on the physical server.
+
+### 12.1 Access the Management Interface
+
+From another computer on the local network:
+
+1. Open a web browser.
+2. Enter the Proxmox management address shown during installation.
+3. Use HTTPS.
+4. Review the browser certificate warning in the context of the locally managed server.
+5. Sign in with the administrative account established during installation.
+6. Verify that the physical node appears in the management interface.
+
+Do not expose the management interface directly to the public internet.
+
+### 12.2 Review the Node
+
+Check:
+
+- CPU model and core count.
+- Memory capacity and usage.
+- Storage availability.
+- Network interfaces.
+- System status.
+- Hardware and system warnings.
+
+### 12.3 Review Storage
+
+Understand the storage definitions displayed by the platform.
+
+Possible storage uses include:
+
+- ISO images.
+- Virtual machine disks.
+- Container templates.
+- Backups.
+- Application data.
+
+Do not assume that storage configured for virtual machine disks is automatically a separate backup destination.
+
+### 12.4 Review Networking
+
+Understand the difference between:
+
+- Physical network interfaces.
+- Linux bridges.
+- Virtual machine network interfaces.
+- VLAN-aware networking.
+- Management network connectivity.
+
+A Linux bridge allows virtual machines to communicate through a network interface according to the bridge configuration.
+
+Do not change the management network configuration remotely without a recovery plan. An incorrect change can make the management interface unreachable.
+
+### 12.5 Create the First Test Virtual Machine
+
+Only after the base installation and network configuration are verified:
+
+1. Download an operating system ISO through the supported management process.
+2. Select the server node.
+3. Open the virtual machine creation workflow.
+4. Assign a unique VM identifier.
+5. Give the VM a descriptive name.
+6. Select the installation ISO.
+7. Allocate an appropriate number of CPU cores.
+8. Allocate RAM while leaving sufficient memory for the physical host.
+9. Select an appropriate virtual disk.
+10. Configure a virtual network interface.
+11. Review the settings.
+12. Create the VM.
+13. Start it.
+14. Complete its operating system installation.
+15. Confirm that it can access the network.
+
+Start with one small test virtual machine rather than creating several at once.
+
+---
+
+## 13. Initial Security Configuration
+
+A home lab should be treated as real infrastructure, even when it is used primarily for learning.
+
+### 13.1 Account Security
+
+- [ ] Use strong, unique passwords.
+- [ ] Avoid shared administrator accounts.
+- [ ] Use normal accounts for routine activities.
+- [ ] Restrict administrative privileges.
+- [ ] Use SSH keys where appropriate.
+- [ ] Protect recovery information.
+
+### 13.2 Network Security
+
+- [ ] Keep management interfaces on a trusted network.
+- [ ] Use firewall rules.
+- [ ] Do not expose management ports directly to the internet.
+- [ ] Restrict access to services that do not need public access.
+- [ ] Understand the router's port-forwarding configuration.
+- [ ] Consider a separate management network as the lab grows.
+
+### 13.3 Software Security
+
+- [ ] Install security updates.
+- [ ] Remove unnecessary services.
+- [ ] Use supported software releases.
+- [ ] Review running services.
+- [ ] Monitor system logs.
+- [ ] Document configuration changes.
+- [ ] Back up important configuration files.
+
+### 13.4 Public Internet Access
+
+Do not make the management interface publicly accessible merely to enable remote administration.
+
+Safer remote-access designs may use:
+
+- A properly configured VPN.
+- A trusted private network.
+- Strong authentication.
+- Firewall restrictions.
+- A carefully maintained remote-access service.
+
+Remote access should be planned separately from basic installation.
+
+---
+
+## 14. Backup and Recovery Planning
+
+A server installation is not complete simply because it boots successfully.
+
+Plan how the system will be recovered after accidental deletion, disk failure, corruption or a failed update.
+
+### 14.1 What Should Be Backed Up?
+
+Depending on the platform, consider backing up:
+
+- Virtual machines.
+- Container data.
+- Databases.
+- Application data.
+- Network configuration.
+- System configuration.
+- Important scripts.
+- Documentation.
+- Encryption keys and recovery information, stored securely.
+
+### 14.2 Backup Destination
+
+Prefer a backup destination that is independent of the primary server storage.
+
+Possible destinations include:
+
+- External storage.
+- A separate backup server.
+- Network-attached storage.
+- A trusted remote backup service.
+
+A second partition on the same physical drive is not an independent backup.
+
+### 14.3 Backup Verification
+
+- [ ] Configure a backup schedule.
+- [ ] Identify what is included.
+- [ ] Identify what is excluded.
+- [ ] Protect backup access.
+- [ ] Record backup results.
+- [ ] Test restoring a file.
+- [ ] Test restoring a virtual machine where applicable.
+- [ ] Review backup retention.
+
+A backup that has never been tested may not be recoverable when needed.
+
+---
+
+## 15. Monitoring and Maintenance
+
+After installation, monitor the server's condition.
+
+### 15.1 Basic Monitoring Areas
+
+| Area | What to monitor |
+|---|---|
+| CPU | Utilization and temperature |
+| RAM | Total use and available memory |
+| Storage | Capacity, health and I/O |
+| Network | Connectivity, traffic and errors |
+| Services | Failed or stopped services |
+| Power | Consumption and UPS condition |
+| System logs | Errors and unusual events |
+
+### 15.2 Maintenance Checklist
+
+- [ ] Review system updates.
+- [ ] Check storage health.
+- [ ] Review available disk capacity.
+- [ ] Check system temperatures.
+- [ ] Check system logs.
+- [ ] Check backup status.
+- [ ] Verify network connectivity.
+- [ ] Review administrator accounts.
+- [ ] Review firewall rules.
+- [ ] Document changes.
+
+Maintenance should be scheduled at a frequency appropriate to the system's use.
+
+---
+
+## 16. Installation Verification Checklist
+
+Use this checklist after the installation is complete.
+
+### Operating System
+
+- [ ] Operating system starts successfully.
+- [ ] Correct platform version is recorded.
+- [ ] System hostname is configured.
+- [ ] Time and date are correct.
+- [ ] Administrative access works.
+- [ ] Updates have been applied.
+- [ ] No unresolved critical installation errors remain.
+
+### Hardware
+
+- [ ] CPU is detected correctly.
+- [ ] Installed RAM is detected correctly.
+- [ ] Storage devices are detected.
+- [ ] Network interfaces are detected.
+- [ ] Cooling is operating correctly.
+- [ ] System temperatures are acceptable.
+
+### Networking
+
+- [ ] Network connection works.
+- [ ] IP configuration is recorded privately.
+- [ ] DNS resolution works.
+- [ ] Default gateway is reachable.
+- [ ] Remote management works where configured.
+
+### Security
+
+- [ ] Administrative credentials are secure.
+- [ ] Firewall configuration has been reviewed.
+- [ ] Unnecessary services have been considered.
+- [ ] Management access is restricted.
+- [ ] Software updates are applied.
+
+### Backup and Recovery
+
+- [ ] Backup destination is identified.
+- [ ] Backup approach is documented.
+- [ ] Recovery requirements are understood.
+- [ ] A restore test is planned or completed.
+
+---
+
+## 17. Installation Record
+
+Complete this section after the actual installation.
+
+| Field | Recorded value |
+|---|---|
+| Physical server name | Not yet assigned |
+| Platform | Not yet selected |
+| Platform edition | Not applicable yet |
+| Platform version | Not yet recorded |
+| Installation date | Not yet recorded |
+| Installation method | Not yet recorded |
+| Boot mode | Not yet recorded |
+| Installation drive | Not yet recorded |
+| Filesystem | Not yet recorded |
+| Hostname | Not yet assigned |
+| Network configuration | Not yet recorded |
+| Installation result | Not started |
+| Verification result | Not started |
+
+### Installation Notes
+
+Record:
+
+- Problems encountered.
+- Installation decisions.
+- Configuration changes.
+- Compatibility issues.
+- Recovery steps.
+- Useful observations.
+
+Notes:
+
+`No installation has been performed yet.`
+
+---
+
+## 18. Operating System Decision Record
+
+Use this table to document the final selection.
+
+| Selection criterion | Decision | Reason |
+|---|---|---|
+| Main platform | Not decided | Pending hardware review |
+| Virtualization platform | Not decided | Pending hardware review |
+| Linux distribution | Not decided | Depends on architecture |
+| Storage configuration | Not decided | Pending drive inventory |
+| Network configuration | Not decided | Pending network assessment |
+| Backup destination | Not decided | Pending storage planning |
+
+### Decision History
+
+| Date | Decision | Reason |
+|---|---|---|
+| Initial documentation | Installation options documented | Prepare for hardware and platform selection |
+
+---
+
+## 19. Repository and Security Notes
+
+This document belongs in the public project documentation.
+
+Keep sensitive operational information out of the repository.
+
+Never publish:
+
+- Passwords.
+- SSH private keys.
+- API tokens.
+- VPN credentials.
+- License keys.
+- Private certificates.
+- Router administrator credentials.
+- Sensitive network diagrams.
+- Public IP addresses associated with personal infrastructure.
+- Exact home location.
+
+Use placeholders in public documentation.
+
+Store private configuration and secret material in an appropriately protected location.
+
+---
+
+## 20. Current Project Status
+
+| Activity | Status |
+|---|---|
+| Operating system options documented | Complete |
+| Installation approach explained | Complete |
+| Hardware compatibility checklist | Complete |
+| Installation preparation | Documented |
+| Installation media prepared | Not started |
+| BIOS/UEFI reviewed | Not started |
+| Platform selected | Not started |
+| Operating system installed | Not started |
+| Network configured | Not started |
+| Security configured | Not started |
+| Installation verified | Not started |
+| Backup configured | Not started |
+
+**Current project stage:** Operating system installation guide documented. Actual platform selection and installation are pending hardware assessment.
